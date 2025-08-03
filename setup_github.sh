@@ -23,10 +23,17 @@ echo "✅ Found project files. Starting setup..."
 echo ""
 
 # Get GitHub username
-read -p "Enter your GitHub username: " github_username
+read -p "Enter your GitHub username (e.g., clichedcarbide2v): " github_username
 
 if [ -z "$github_username" ]; then
     echo "❌ GitHub username is required."
+    exit 1
+fi
+
+# Validate GitHub username format (no @ symbols, no spaces)
+if [[ "$github_username" == *"@"* ]] || [[ "$github_username" == *" "* ]]; then
+    echo "❌ Invalid GitHub username format. Please enter your GitHub username (not email)."
+    echo "   Example: clichedcarbide2v (not cliched.carbide2v@icloud.com)"
     exit 1
 fi
 
