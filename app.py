@@ -30,6 +30,12 @@ def congress_buys_api():
         
         # Generate index
         index = CongressBuysIndex()
+        
+        # Set API key from environment variable if available
+        api_key = os.environ.get('QUIVERQUANT_API_KEY')
+        if api_key:
+            index.set_api_key(api_key)
+        
         result_df = index.generate_index(days_back=days_back)
         
         # Convert to JSON
@@ -62,6 +68,12 @@ def congress_equity_exposure_api():
         
         # Generate index
         index = CongressEquityExposureIndex()
+        
+        # Set API key from environment variable if available
+        api_key = os.environ.get('QUIVERQUANT_API_KEY')
+        if api_key:
+            index.set_api_key(api_key)
+        
         result_df = index.generate_index(quarter_end_date=quarter_end)
         
         # Convert to JSON
@@ -88,10 +100,13 @@ def congress_equity_exposure_api():
 @app.route('/api/health')
 def health_check():
     """Health check endpoint for Vercel"""
+    api_key_configured = bool(os.environ.get('QUIVERQUANT_API_KEY'))
     return jsonify({
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
-        'indexes': ['congress-buys', 'congress-equity-exposure']
+        'indexes': ['congress-buys', 'congress-equity-exposure'],
+        'api_key_configured': api_key_configured,
+        'data_source': 'real_data' if api_key_configured else 'sample_data'
     })
 
 @app.route('/congress-buys')
