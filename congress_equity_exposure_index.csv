@@ -1,0 +1,11 @@
+ticker,company,shares_held,options_exposure,net_shares,dollar_value,num_holders,weight
+NVDA,NVIDIA Corporation,1400,655.0,2055.0,1746750.0,4,35.400000000000006
+AVGO,Broadcom Inc.,950,210.00000000000003,1160.0,1392000.0,3,28.1
+MSFT,Microsoft Corporation,2300,660.0,2960.0,1184000.0,4,23.9
+AAPL,Apple Inc.,1100,120.0,1220.0,219600.0,3,4.4
+META,Meta Platforms Inc.,300,50.0,350.0,157500.0,2,3.2
+AMZN,Amazon.com Inc.,400,65.0,465.0,69750.0,2,1.4
+AMD,Advanced Micro Devices,370,70.0,440.0,52800.0,2,1.1
+GOOGL,Alphabet Inc.,300,55.00000000000001,355.0,49700.0,2,1.0
+TSLA,Tesla Inc.,250,-40.0,210.0,42000.0,2,0.8
+JPM,JPMorgan Chase & Co.,200,0.0,200.0,36000.0,2,0.7

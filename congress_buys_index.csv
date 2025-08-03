@@ -1,0 +1,11 @@
+ticker,company,dollar_amount,weight
+NVDA,NVIDIA Corporation,1675002.0,30.60000000000001
+AVGO,Broadcom Inc.,1475002.0,26.8
+MSFT,Microsoft Corporation,625001.5,11.4
+AMD,Advanced Micro Devices,550001.0,10.0
+AMZN,Amazon.com Inc.,250001.0,4.5
+GOOGL,Alphabet Inc.,250001.0,4.5
+META,Meta Platforms Inc.,250001.0,4.5
+JPM,JPMorgan Chase & Co.,175000.5,3.2
+AAPL,Apple Inc.,140001.5,2.5
+TSLA,Tesla Inc.,107501.0,2.0

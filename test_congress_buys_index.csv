@@ -1,0 +1,10 @@
+ticker,company,dollar_amount,weight
+NVDA,NVIDIA Corporation,750000.5,39.5
+TSLA,Tesla Inc.,375000.5,19.8
+AAPL,Apple Inc.,207501.0,10.9
+AMD,Advanced Micro Devices,175000.5,9.2
+AMZN,Amazon.com Inc.,175000.5,9.2
+META,Meta Platforms Inc.,75000.5,4.0
+MSFT,Microsoft Corporation,75000.5,4.0
+GOOGL,Alphabet Inc.,32500.5,1.7
+NFLX,Netflix Inc.,32500.5,1.7

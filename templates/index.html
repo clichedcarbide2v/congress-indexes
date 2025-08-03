@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Congress Indexes Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-chart-line text-blue-600 text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold text-gray-800">Congress Indexes Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-blue-600 hover:text-blue-800">Dashboard</a>
+                    <a href="/congress-buys" class="text-gray-600 hover:text-gray-800">Congress Buys</a>
+                    <a href="/congress-equity-exposure" class="text-gray-600 hover:text-gray-800">Equity Exposure</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Congress Trading Indexes</h2>
+            <p class="text-lg text-gray-600">Real-time congressional trading and holdings data</p>
+        </div>
+
+        <!-- Index Cards -->
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
+            <!-- Congress Buys Index -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-shopping-cart text-green-600 text-2xl mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Congress Buys Index</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Top 10 stocks by total dollars purchased by Congress in the last 100 days</p>
+                <div id="congress-buys-summary" class="mb-4">
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+                <div class="flex space-x-3">
+                    <button onclick="loadCongressBuys()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                    <a href="/congress-buys" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        <i class="fas fa-external-link-alt mr-2"></i>View Details
+                    </a>
+                </div>
+            </div>
+
+            <!-- Congress Equity Exposure Index -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-chart-pie text-purple-600 text-2xl mr-3"></i>
+                    <h3 class="text-xl font-semibold text-gray-800">Congress Equity Exposure Index</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Top 10 stocks by largest total congressional net holding value at quarter end</p>
+                <div id="equity-exposure-summary" class="mb-4">
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+                <div class="flex space-x-3">
+                    <button onclick="loadEquityExposure()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                    <a href="/congress-equity-exposure" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        <i class="fas fa-external-link-alt mr-2"></i>View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Congress Buys Chart -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Congress Buys - Top Holdings</h3>
+                <canvas id="congressBuysChart" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Equity Exposure Chart -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Equity Exposure - Top Holdings</h3>
+                <canvas id="equityExposureChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Data Tables -->
+        <div class="grid md:grid-cols-2 gap-8 mt-8">
+            <!-- Congress Buys Table -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Congress Buys - Constituents</h3>
+                <div id="congress-buys-table" class="overflow-x-auto">
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equity Exposure Table -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Equity Exposure - Constituents</h3>
+                <div id="equity-exposure-table" class="overflow-x-auto">
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-300">Congress Indexes Dashboard - Real-time congressional trading data</p>
+            <p class="text-gray-400 text-sm mt-2">Data sourced from STOCK Act filings and congressional disclosures</p>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables for charts
+        let congressBuysChart = null;
+        let equityExposureChart = null;
+
+        // Load Congress Buys Index
+        async function loadCongressBuys() {
+            try {
+                const response = await fetch('/api/congress-buys');
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                updateCongressBuysSummary(data);
+                updateCongressBuysTable(data.constituents);
+                updateCongressBuysChart(data.constituents);
+            } catch (error) {
+                console.error('Error loading Congress Buys:', error);
+                document.getElementById('congress-buys-summary').innerHTML = 
+                    '<p class="text-red-600">Error loading data</p>';
+            }
+        }
+
+        // Load Equity Exposure Index
+        async function loadEquityExposure() {
+            try {
+                const response = await fetch('/api/congress-equity-exposure');
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                updateEquityExposureSummary(data);
+                updateEquityExposureTable(data.constituents);
+                updateEquityExposureChart(data.constituents);
+            } catch (error) {
+                console.error('Error loading Equity Exposure:', error);
+                document.getElementById('equity-exposure-summary').innerHTML = 
+                    '<p class="text-red-600">Error loading data</p>';
+            }
+        }
+
+        // Update Congress Buys Summary
+        function updateCongressBuysSummary(data) {
+            const summary = document.getElementById('congress-buys-summary');
+            summary.innerHTML = `
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="text-gray-500">Total Weight</p>
+                        <p class="font-semibold">${data.summary.total_weight.toFixed(1)}%</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500">Total Value</p>
+                        <p class="font-semibold">$${(data.summary.total_value / 1000000).toFixed(1)}M</p>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Last updated: ${data.last_updated}</p>
+            `;
+        }
+
+        // Update Equity Exposure Summary
+        function updateEquityExposureSummary(data) {
+            const summary = document.getElementById('equity-exposure-summary');
+            summary.innerHTML = `
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="text-gray-500">Total Weight</p>
+                        <p class="font-semibold">${data.summary.total_weight.toFixed(1)}%</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500">Total Value</p>
+                        <p class="font-semibold">$${(data.summary.total_value / 1000000).toFixed(1)}M</p>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Last updated: ${data.last_updated}</p>
+            `;
+        }
+
+        // Update Congress Buys Table
+        function updateCongressBuysTable(constituents) {
+            const table = document.getElementById('congress-buys-table');
+            table.innerHTML = `
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left py-2">Ticker</th>
+                            <th class="text-left py-2">Weight</th>
+                            <th class="text-left py-2">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${constituents.slice(0, 5).map(stock => `
+                            <tr class="border-b">
+                                <td class="py-2 font-semibold">${stock.ticker}</td>
+                                <td class="py-2">${stock.weight.toFixed(1)}%</td>
+                                <td class="py-2">$${(stock.dollar_amount / 1000).toFixed(0)}K</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Update Equity Exposure Table
+        function updateEquityExposureTable(constituents) {
+            const table = document.getElementById('equity-exposure-table');
+            table.innerHTML = `
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left py-2">Ticker</th>
+                            <th class="text-left py-2">Weight</th>
+                            <th class="text-left py-2">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${constituents.slice(0, 5).map(stock => `
+                            <tr class="border-b">
+                                <td class="py-2 font-semibold">${stock.ticker}</td>
+                                <td class="py-2">${stock.weight.toFixed(1)}%</td>
+                                <td class="py-2">$${(stock.dollar_value / 1000).toFixed(0)}K</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Update Congress Buys Chart
+        function updateCongressBuysChart(constituents) {
+            const ctx = document.getElementById('congressBuysChart').getContext('2d');
+            
+            if (congressBuysChart) {
+                congressBuysChart.destroy();
+            }
+
+            congressBuysChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: constituents.slice(0, 5).map(stock => stock.ticker),
+                    datasets: [{
+                        data: constituents.slice(0, 5).map(stock => stock.weight),
+                        backgroundColor: [
+                            '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update Equity Exposure Chart
+        function updateEquityExposureChart(constituents) {
+            const ctx = document.getElementById('equityExposureChart').getContext('2d');
+            
+            if (equityExposureChart) {
+                equityExposureChart.destroy();
+            }
+
+            equityExposureChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: constituents.slice(0, 5).map(stock => stock.ticker),
+                    datasets: [{
+                        data: constituents.slice(0, 5).map(stock => stock.weight),
+                        backgroundColor: [
+                            '#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCongressBuys();
+            loadEquityExposure();
+        });
+    </script>
+</body>
+</html> 
